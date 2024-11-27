@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemAttributes" load_steps=4 format=3 uid="uid://bjf4iyjbf8xtw"]
+
+[ext_resource type="Texture2D" uid="uid://dnqrbfsrnu5sr" path="res://icon.svg" id="1_vvn7w"]
+[ext_resource type="Script" path="res://scripts/ItemAttributes.gd" id="2_nj61r"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_y5isy"]
+
+[resource]
+script = ExtResource("2_nj61r")
+Name = "cucc"
+Icon = ExtResource("1_vvn7w")
+EquipTimeMultiplier = 2.0
+PropMesh = SubResource("PrismMesh_y5isy")
+PropSize = Vector3(1, 1, 1)
+CollSize = Vector3(1, 1, 1)
+Amount = 1
+Stack = 1

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemAttributes" load_steps=4 format=3 uid="uid://ctoukilahsc8x"]
+
+[ext_resource type="Texture2D" uid="uid://cd6d32eab67qo" path="res://img/handy.png" id="1_ca5fq"]
+[ext_resource type="Script" path="res://scripts/ItemAttributes.gd" id="3_rp153"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ftd80"]
+
+[resource]
+resource_local_to_scene = true
+script = ExtResource("3_rp153")
+Name = "tárgy"
+Icon = ExtResource("1_ca5fq")
+EquipTimeMultiplier = 2.0
+PropMesh = SubResource("CylinderMesh_ftd80")
+PropSize = Vector3(1, 1, 1)
+CollSize = Vector3(1, 1, 1)
+Amount = 1
+Stack = 1

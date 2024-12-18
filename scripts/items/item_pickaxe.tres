@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="ItemAttributes" load_steps=5 format=3 uid="uid://bpcdivslw3cgl"]
+
+[ext_resource type="Texture2D" uid="uid://bukh23thhk4fm" path="res://img/items/pickaxeIcon.png" id="1_guu2e"]
+[ext_resource type="AudioStream" uid="uid://blarvs3q85y7c" path="res://audio/syncsfx_axe_grab.tres" id="2_ji60p"]
+[ext_resource type="ArrayMesh" uid="uid://blln7td0f3n4d" path="res://models/pickaxe.res" id="3_j3sdb"]
+[ext_resource type="Script" path="res://scripts/ItemAttributes.gd" id="4_djy8o"]
+
+[resource]
+script = ExtResource("4_djy8o")
+Name = "pickaxe"
+Icon = ExtResource("1_guu2e")
+EquipTimeMultiplier = 2.0
+PropMesh = ExtResource("3_j3sdb")
+Prop = {
+"collision": Vector3(1, 0.15, 1),
+"rotation": Vector3(90, 0, 90),
+"size": Vector3(0.15, 0.15, 0.15)
+}
+ViewmodelMesh = ExtResource("3_j3sdb")
+Viewmodel = {
+"animationset": null,
+"offset": Vector3(0, 0, 0),
+"rotation": Vector3(0, 0, 0),
+"size": Vector3(1, 1, 1)
+}
+PickupSound = ExtResource("2_ji60p")
+Anims = {
+"action1": "vm_toolattack",
+"equip": "vm_toolequip",
+"idle": "vm_toolidle1",
+"reload": "vm_toolattack"
+}
+Action1 = 1
+LTType = 0
+LTRange = 3.0
+Power = 1.0
+PowerMultipliers = {
+null: 1,
+"armored": 0.5,
+"flesh": 1,
+"metal": 1,
+"vulnerable": 2,
+"wood": 0
+}
+Action1Interval = 1.0
+Amount = 1
+Stack = 1

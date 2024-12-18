@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://bbxblxslja5wq"]
+[gd_scene load_steps=9 format=3 uid="uid://bbxblxslja5wq"]
 
 [ext_resource type="Script" path="res://scripts/items/itemprop.gd" id="1_10ljp"]
 [ext_resource type="Texture2D" uid="uid://cd6d32eab67qo" path="res://img/handy.png" id="2_wv1ut"]
+[ext_resource type="AudioStream" uid="uid://dija3xf3g05tn" path="res://audio/sfx_grab.tres" id="3_7xkpa"]
 [ext_resource type="Script" path="res://scripts/ItemAttributes.gd" id="3_wldi5"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_h1vk1"]
@@ -13,9 +14,37 @@ Name = "tárgy"
 Icon = ExtResource("2_wv1ut")
 EquipTimeMultiplier = 2.0
 PropMesh = SubResource("CylinderMesh_h1vk1")
-PropSize = Vector3(1, 1, 1)
-PropRotation = Vector3(0, 0, 0)
-CollSize = Vector3(1, 1, 1)
+Prop = {
+"collision": Vector3(1, 1, 1),
+"rotation": Vector3(0, 0, 0),
+"size": Vector3(1, 1, 1)
+}
+Viewmodel = {
+"animationset": null,
+"offset": Vector3(0, 0, 0),
+"rotation": Vector3(0, 0, 0),
+"size": Vector3(1, 1, 1)
+}
+PickupSound = ExtResource("3_7xkpa")
+Anims = {
+"action1": "vm_toolattack",
+"equip": "vm_toolequip",
+"idle": "vm_toolidle1",
+"reload": "vm_toolattack"
+}
+Consume_OnAction = false
+Action1 = 0
+LTType = 0
+LTRange = 2.5
+Power = 1.0
+PowerMultipliers = {
+"armored": 0.5,
+"flesh": 1,
+"stone": 1,
+"vulnerable": 2,
+"wood": 1
+}
+Action1Interval = 1.0
 Amount = 1
 Stack = 1
 
@@ -31,7 +60,7 @@ collision_mask = 4
 script = ExtResource("1_10ljp")
 Attributes = SubResource("Resource_ms33r")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." groups=["Pickup"]]
 shape = SubResource("BoxShape3D_pfrsn")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]

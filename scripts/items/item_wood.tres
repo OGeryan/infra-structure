@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="ItemAttributes" load_steps=5 format=3 uid="uid://cujf8y4qv6rhr"]
+
+[ext_resource type="Texture2D" uid="uid://b7627gh0fdeqv" path="res://img/items/lumberIcon.png" id="1_gt3h8"]
+[ext_resource type="AudioStream" uid="uid://dija3xf3g05tn" path="res://audio/sfx_grab.tres" id="2_bh8ev"]
+[ext_resource type="ArrayMesh" uid="uid://dyvoufcfncsi0" path="res://models/wood.res" id="3_y1277"]
+[ext_resource type="Script" path="res://scripts/ItemAttributes.gd" id="4_qul3f"]
+
+[resource]
+resource_local_to_scene = true
+script = ExtResource("4_qul3f")
+Name = "lumber"
+Icon = ExtResource("1_gt3h8")
+EquipTimeMultiplier = 2.0
+PropMesh = ExtResource("3_y1277")
+Prop = {
+"collision": Vector3(0.6, 1, 0.6),
+"rotation": Vector3(90, 0, 90),
+"size": Vector3(0.6, 0.6, 0.6)
+}
+ViewmodelMesh = ExtResource("3_y1277")
+Viewmodel = {
+"animationset": null,
+"offset": Vector3(0, 0, 0),
+"rotation": Vector3(0, 0, 0),
+"size": Vector3(1, 1, 1)
+}
+PickupSound = ExtResource("2_bh8ev")
+Anims = {
+"action1": "vm_toolattack",
+"equip": "vm_idle",
+"idle": "vm_idle",
+"reload": "vm_toolattack"
+}
+Action1 = 0
+LTType = 0
+LTRange = 2.5
+Power = 1.0
+PowerMultipliers = {
+null: 1,
+"armored": 0.5,
+"flesh": 1,
+"metal": 0,
+"vulnerable": 2,
+"wood": 1
+}
+Action1Interval = 1.0
+Amount = 1
+Stack = 12

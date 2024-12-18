@@ -22,12 +22,14 @@ var HeadBobSpeed = 0
 var Landed = true
 
 var Inventory : Dictionary = {
-	0:ItemAttributes.new(),
+	0:null,
 	1:null,
 	2:null,
 	3:null,
 	4:null
 }
+
+var Quitting = 0.0
 
 var InvSlot = 0:
 	set(x):
@@ -53,7 +55,6 @@ var ItemReady = true
 
 func _ready() -> void:
 	InvSlot = 0
-	F_SetInventoryItem(0, preload("res://scripts/items/test_item.tres"))
 	HeadOrigin = $Camera3D.position.y
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	JumpGravity = (2*JumpHeight)/pow(Jump_Peak_T, 2)
@@ -94,7 +95,7 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ChangeItemDown"):
 		InvSlot -= 1
 	
-	if !ItemReady:
+	if !ItemReady and EquippedItem:
 		$CanvasLayer/Control/EquipProgress.visible = true
 		Equipping += delta*EquippedItem.EquipTimeMultiplier
 		if Equipping >= 1:
@@ -103,6 +104,23 @@ func _process(delta: float) -> void:
 		$CanvasLayer/Control/EquipProgress.value = Equipping
 	else:
 		$CanvasLayer/Control/EquipProgress.visible = false
+		
+	$HoverSprite.visible = ($Camera3D/PickupRay.get_collider() and $Camera3D/PickupRay.get_collider().is_in_group("Pickup"))
+	$CanvasLayer/Crosshair.visible = !$HoverSprite.visible
+	if $Camera3D/PickupRay.get_collider():
+		if $Camera3D/PickupRay.get_collider().is_in_group("Pickup"):
+			$HoverSprite.global_position = $Camera3D/PickupRay.get_collider().global_position
+	
+	if Input.is_key_pressed(KEY_ESCAPE):
+		Quitting += delta
+	else:
+		Quitting -= delta
+	Quitting = clampf(Quitting, 0.0, 1.0)
+	$CanvasLayer/Quitting.visible = Quitting > .05
+	$CanvasLayer/Quitting/QuitBar.value = Quitting
+	if is_equal_approx(1.0, Quitting):
+		get_tree().change_scene_to_packed(preload("res://maps/mainmenu.tscn"))
+		return
 
 	move_and_slide()
 func _input(event: InputEvent) -> void:
@@ -114,11 +132,31 @@ func _input(event: InputEvent) -> void:
 		if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 			get_viewport().set_input_as_handled()
-	if event.is_action_pressed("ui_cancel"):
+		#FIRING
+		if ItemReady and EquippedItem:
+			match EquippedItem.Action1:
+				0:
+					pass
+				1:
+					var VM = $Camera3D/Viewport/vm_hands
+					VM.F_PlayAnim(EquippedItem.Anims["action1"], true)
+					VM.F_SetBusy(EquippedItem.Action1Interval)
+					VM.F_PlayAnim(EquippedItem.Anims["idle"], false, true)
+					if !VM.is_connected("Action1", F_Action):
+						VM.connect("Action1", F_Action)
+						await VM.get_node("AnimationPlayer").animation_finished
+						VM.disconnect("Action1", F_Action)
+				2:
+					F_Action()
+				_:
+					pass
+	if event.is_action_pressed("MouseToggle"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_F11:
 			get_window().mode = Window.MODE_FULLSCREEN if get_window().mode == Window.MODE_WINDOWED else Window.MODE_WINDOWED
+		if event.keycode == KEY_F1:
+			$CanvasLayer.visible = !$CanvasLayer.visible
 		if event.keycode == KEY_1:
 			InvSlot = 0
 		if event.keycode == KEY_2:
@@ -130,17 +168,39 @@ func _input(event: InputEvent) -> void:
 		if event.keycode == KEY_5:
 			InvSlot = 4
 		if event.is_action_pressed("PickUp"):
-			if F_RayCastForward(5):
-				var Hit = F_RayCastForward(5)["collider"]
+			if F_RayCastForward(3.5):
+				var Hit = F_RayCastForward(3.5)["collider"]
 				if Hit.is_in_group("Pickup"):
 					F_SetInventoryItem(InvSlot, Hit.Attributes, Hit)
+				elif Hit.is_in_group("Interact"):
+					if Hit.get_parent().has_method("F_Interact"):
+						Hit.F_Interact(self)
 		if event.is_action_pressed("Throw") and Inventory[InvSlot] != null:
-			if F_RayCastForward(5):
-				var HitPos = F_RayCastForward(5)["position"]
-				Inventory[InvSlot].F_SpawnItem(Vector3(HitPos.x, global_position.y, HitPos.z), Inventory[InvSlot], self)
+			if !F_RayCastForward(0.5):
+				var SpawnedItem = Inventory[InvSlot].F_SpawnItem($Camera3D.global_position, Inventory[InvSlot], self)
 				F_SetInventoryItem(InvSlot, null, null)
-				
+				SpawnedItem.velocity = Vector3(($Camera3D.global_transform.basis.z*-15).x, 0, ($Camera3D.global_transform.basis.z*-15).z)
 
+func F_Action():
+	match EquippedItem.Action1:
+		1:
+			var Ray = preload("res://scenes/actionraycast.tscn").instantiate()
+			if EquippedItem.LTType == 1:
+				EquippedItem.PowerMultipliers["wood"] = int(F_HasInventoryItem("lumber", 1))
+				EquippedItem.PowerMultipliers["metal"] = int(F_HasInventoryItem("steel", 1))
+			$Camera3D.add_child(Ray)
+			Ray.F_Cast(EquippedItem.LTType, EquippedItem.LTRange, EquippedItem.Power, $Camera3D, EquippedItem.PowerMultipliers, self)
+			await get_tree().create_timer(.5).timeout
+			Ray.queue_free()
+		2:
+			var Throw = preload("res://scenes/dynamite.tscn").instantiate()
+			AudioManager.F_QuickPlaySound(preload("res://audio/sfx_grab.tres"))
+			get_tree().root.get_child(0).add_child(Throw)
+			Throw.global_position = global_position
+			Throw.velocity = Vector3(($Camera3D.global_transform.basis.z*-5).x, 0, ($Camera3D.global_transform.basis.z*-5).z)
+	if EquippedItem.Consume_OnAction:
+		F_SetInventoryItem(InvSlot, null, null)
+			
 func F_RayCastForward(length: float = 100) -> Dictionary:
 	var space = get_world_3d().direct_space_state
 	var query = PhysicsRayQueryParameters3D.create($Camera3D.global_position,
@@ -169,6 +229,8 @@ func _step(force: bool) -> void:
 				AudioManager.F_QuickPlaySound(preload("res://audio/sfx_metalstep.tres"), self)
 			"ground":
 				AudioManager.F_QuickPlaySound(preload("res://audio/sfx_grassstep.tres"), self)
+			"sand":
+				AudioManager.F_QuickPlaySound(preload("res://audio/sfx_sandstep.tres"), self, 5)
 			_:
 				AudioManager.F_QuickPlaySound(preload("res://audio/sfx_stonestep.tres"), self)
 
@@ -181,14 +243,35 @@ func _headbob() -> void:
 		
 func F_EquipItem(slot : int):
 	if Inventory[slot] == null:
-		$Camera3D/Viewport/Hands/PLACEHOLDER.mesh = null
+		$Camera3D/Viewport/vm_hands/PLACEHOLDER.mesh = null
+		$Camera3D/Viewport/vm_hands.F_SetBusy(0)
+		$Camera3D/Viewport/vm_hands.F_ClearQueue()
+		$Camera3D/Viewport/vm_hands.F_PlayAnim("vm_idle", true)
+		EquippedItem = null
+		ItemReady = true
 		return
-	$Camera3D/Viewport/Hands/PLACEHOLDER.mesh = Inventory[InvSlot].PropMesh
+	$Camera3D/Viewport/vm_hands.F_SetBusy(0)
+	$Camera3D/Viewport/vm_hands.F_ClearQueue()
+	$Camera3D/Viewport/vm_hands.F_PlayAnim(Inventory[InvSlot].Anims["equip"])
+	$CanvasLayer/SelectText.text = Inventory[slot].Name
+	$CanvasLayer/AnimationPlayer.stop()
+	$CanvasLayer/AnimationPlayer.play("textupdate")
+	$Camera3D/Viewport/vm_hands.F_PlayAnim(Inventory[InvSlot].Anims["idle"], false, true)
+	if Inventory[InvSlot].Viewmodel == null:
+		$Camera3D/Viewport/vm_hands/PLACEHOLDER.mesh = Inventory[InvSlot].PropMesh
+		$Camera3D/Viewport/vm_hands/Tool.mesh = null
+		$Camera3D/Viewport/vm_hands/Tool.position = Inventory[InvSlot]["offset"]
+		$Camera3D/Viewport/vm_hands/Tool.rotation_degrees = Inventory[InvSlot]["rotation"]
+		$Camera3D/Viewport/vm_hands/Tool.scale = Inventory[InvSlot]["size"]
+	else:
+		$Camera3D/Viewport/vm_hands/Tool.mesh = Inventory[InvSlot].ViewmodelMesh
+		$Camera3D/Viewport/vm_hands/PLACEHOLDER.mesh = null
+
 	ItemReady = false
 	Equipping = 0
 	EquippedItem = Inventory[slot]
 
-func F_SetInventoryItem(id : int, item : ItemAttributes, pickup : Node3D = null):
+func F_SetInventoryItem(id : int, item : ItemAttributes, pickup : Node3D = null, equip = true):
 	var Old = Inventory[id] as ItemAttributes
 	var StackItem = false
 	#STACK ID
@@ -200,7 +283,7 @@ func F_SetInventoryItem(id : int, item : ItemAttributes, pickup : Node3D = null)
 			pickup.free()
 			Old.F_SpawnItem(Pos, Old, self)
 		else:
-			item.Amount += pickup.Attributes.Amount
+			item.Amount = Old.Amount + pickup.Attributes.Amount
 			pickup.free()
 	if pickup and is_instance_valid(pickup):
 		pickup.free()
@@ -208,6 +291,8 @@ func F_SetInventoryItem(id : int, item : ItemAttributes, pickup : Node3D = null)
 	Inventory[id] = item
 	if item != null:
 		$CanvasLayer/Control/InvSlots.get_children()[id].get_node("MarginContainer/Icon").texture = item.Icon
+		if equip:
+			AudioManager.F_QuickPlaySound(item.PickupSound, self, 1)
 		if item.Amount > 1:
 			$CanvasLayer/Control/InvSlots.get_children()[id].get_node("StackSize").text = str(item.Amount,"x")
 		else:
@@ -215,5 +300,27 @@ func F_SetInventoryItem(id : int, item : ItemAttributes, pickup : Node3D = null)
 	else:
 		$CanvasLayer/Control/InvSlots.get_children()[id].get_node("MarginContainer/Icon").texture = Texture.new()
 		$CanvasLayer/Control/InvSlots.get_children()[id].get_node("StackSize").text = ""
-	F_EquipItem(InvSlot)
-		
+	if equip:
+		F_EquipItem(InvSlot)
+	
+	
+func F_HasInventoryItem(Name: String, Min: int = 1):
+	for i in Inventory:
+		if Inventory[i]:
+			if Inventory[i].Name == Name and Inventory[i].Amount >= Min:
+				return true
+	return false
+	
+func F_ConsumeItem(Name: String, N: int):
+	var Consumed = 0
+	for i in Inventory:
+		if Inventory[i]:
+			if Inventory[i].Name == Name:
+				var ToConsume = min(Inventory[i].Amount, N-Consumed)
+				Inventory[i].Amount -= ToConsume
+				Consumed += ToConsume
+				F_SetInventoryItem(i, Inventory[i], null, false)
+				if Inventory[i].Amount <= 0:
+					F_SetInventoryItem(i, null, null, false)
+		if Consumed >= N:
+			return

@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="ItemAttributes" load_steps=5 format=3 uid="uid://dbyeg0p1l2h48"]
+
+[ext_resource type="Texture2D" uid="uid://bjs5cedbjlk3y" path="res://img/items/axeIcon.png" id="1_qn2if"]
+[ext_resource type="AudioStream" uid="uid://blarvs3q85y7c" path="res://audio/syncsfx_axe_grab.tres" id="2_jfujw"]
+[ext_resource type="ArrayMesh" uid="uid://daj33awhga25x" path="res://models/axe.res" id="3_dfwjn"]
+[ext_resource type="Script" path="res://scripts/ItemAttributes.gd" id="4_hk533"]
+
+[resource]
+resource_local_to_scene = true
+script = ExtResource("4_hk533")
+Name = "axe"
+Icon = ExtResource("1_qn2if")
+EquipTimeMultiplier = 2.0
+PropMesh = ExtResource("3_dfwjn")
+Prop = {
+"collision": Vector3(1, 0.15, 1),
+"rotation": Vector3(90, 0, 90),
+"size": Vector3(0.15, 0.15, 0.15)
+}
+ViewmodelMesh = ExtResource("3_dfwjn")
+Viewmodel = {
+"animationset": null,
+"offset": Vector3(0, 0, 0),
+"rotation": Vector3(0, 0, 0),
+"size": Vector3(1, 1, 1)
+}
+PickupSound = ExtResource("2_jfujw")
+Anims = {
+"action1": "vm_toolattack",
+"equip": "vm_toolequip",
+"idle": "vm_toolidle1",
+"reload": "vm_toolattack"
+}
+Action1 = 1
+LTType = 0
+LTRange = 3.0
+Power = 1.0
+PowerMultipliers = {
+null: 1,
+"armored": 0.5,
+"flesh": 1,
+"metal": 0,
+"vulnerable": 2,
+"wood": 1
+}
+Action1Interval = 1.0
+Amount = 1
+Stack = 1

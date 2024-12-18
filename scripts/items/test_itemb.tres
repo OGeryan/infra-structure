@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="ItemAttributes" load_steps=4 format=3 uid="uid://ctoukilahsc8x"]
+[gd_resource type="Resource" script_class="ItemAttributes" load_steps=5 format=3 uid="uid://ctoukilahsc8x"]
 
 [ext_resource type="Texture2D" uid="uid://cd6d32eab67qo" path="res://img/handy.png" id="1_ca5fq"]
+[ext_resource type="AudioStream" uid="uid://dija3xf3g05tn" path="res://audio/sfx_grab.tres" id="2_2t04u"]
 [ext_resource type="Script" path="res://scripts/ItemAttributes.gd" id="3_rp153"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_ftd80"]
@@ -13,6 +14,26 @@ Icon = ExtResource("1_ca5fq")
 EquipTimeMultiplier = 2.0
 PropMesh = SubResource("CylinderMesh_ftd80")
 PropSize = Vector3(1, 1, 1)
+PropRotation = Vector3(0, 0, 0)
 CollSize = Vector3(1, 1, 1)
+PickupSound = ExtResource("2_2t04u")
+Anims = {
+"action1": "vm_toolattack",
+"equip": "vm_toolequip",
+"idle": "vm_toolidle1",
+"reload": "vm_toolattack"
+}
+Action1 = 0
+LTType = 0
+LTRange = 2.5
+Power = 1.0
+PowerMultipliers = {
+"armored": 0.5,
+"flesh": 1,
+"stone": 1,
+"vulnerable": 2,
+"wood": 1
+}
+Action1Interval = 1.0
 Amount = 1
 Stack = 1

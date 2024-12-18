@@ -17,4 +17,12 @@ func F_QuickPlaySound(Stream: AudioStream, Parent: Node = get_tree().root.get_ch
 	Parent.add_child(New)
 	New.volume_db = linear_to_db(Volume)
 	New.play()
+	return New
+	
+func F_QuickPlaySound2D(Stream: AudioStream, Parent: Node = get_tree().root.get_child(0), Volume : float = 1):
+	var New = AudioStreamPlayer2D.new()
+	New.stream = Stream
+	Parent.add_child(New)
+	New.volume_db = linear_to_db(Volume)
+	New.play()
 	

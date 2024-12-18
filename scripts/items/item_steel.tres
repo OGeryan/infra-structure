@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="ItemAttributes" load_steps=5 format=3 uid="uid://7j741mmkl474"]
+
+[ext_resource type="Texture2D" uid="uid://j43gn8fpb1qg" path="res://img/items/steelIcon.png" id="1_bysa8"]
+[ext_resource type="AudioStream" uid="uid://dija3xf3g05tn" path="res://audio/sfx_grab.tres" id="2_ywhy3"]
+[ext_resource type="ArrayMesh" uid="uid://bnhimkl7pwgev" path="res://models/rail_metal.res" id="3_3u7st"]
+[ext_resource type="Script" path="res://scripts/ItemAttributes.gd" id="4_fdm2f"]
+
+[resource]
+resource_local_to_scene = true
+script = ExtResource("4_fdm2f")
+Name = "steel"
+Icon = ExtResource("1_bysa8")
+EquipTimeMultiplier = 2.0
+PropMesh = ExtResource("3_3u7st")
+Prop = {
+"collision": Vector3(0.4, 0.3, 0.5),
+"rotation": Vector3(0, 0, 0),
+"size": Vector3(0.6, 0.6, 0.15)
+}
+ViewmodelMesh = ExtResource("3_3u7st")
+Viewmodel = {
+"animationset": null,
+"offset": Vector3(0, 0, 0),
+"rotation": Vector3(0, 0, 0),
+"size": Vector3(1, 1, 1)
+}
+PickupSound = ExtResource("2_ywhy3")
+Anims = {
+"action1": "vm_holdidle",
+"equip": "vm_idle",
+"idle": "vm_idle",
+"reload": "vm_toolattack"
+}
+Action1 = 0
+LTType = 0
+LTRange = 2.5
+Power = 1.0
+PowerMultipliers = {
+null: 1,
+"armored": 0.5,
+"flesh": 1,
+"metal": 0,
+"vulnerable": 2,
+"wood": 1
+}
+Action1Interval = 1.0
+Amount = 1
+Stack = 6

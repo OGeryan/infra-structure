@@ -1,17 +1,48 @@
-[gd_resource type="Resource" script_class="ItemAttributes" load_steps=4 format=3 uid="uid://bjt4umw83pnt4"]
+[gd_resource type="Resource" script_class="ItemAttributes" load_steps=5 format=3 uid="uid://bjt4umw83pnt4"]
 
-[ext_resource type="Texture2D" uid="uid://dnqrbfsrnu5sr" path="res://icon.svg" id="1_71h4s"]
+[ext_resource type="Texture2D" uid="uid://b8t3jn567v5gl" path="res://img/items/hammerIcon.png" id="1_as2jj"]
 [ext_resource type="Script" path="res://scripts/ItemAttributes.gd" id="2_dcnp5"]
+[ext_resource type="AudioStream" uid="uid://blarvs3q85y7c" path="res://audio/syncsfx_axe_grab.tres" id="2_dm5gv"]
 [ext_resource type="ArrayMesh" uid="uid://c1mu2dmfso7tu" path="res://models/hammer.res" id="2_itxba"]
 
 [resource]
+resource_local_to_scene = true
 script = ExtResource("2_dcnp5")
 Name = "hammer"
-Icon = ExtResource("1_71h4s")
+Icon = ExtResource("1_as2jj")
 EquipTimeMultiplier = 2.0
 PropMesh = ExtResource("2_itxba")
-PropSize = Vector3(0.2, 0.2, 0.2)
-PropRotation = Vector3(90, 0, 90)
-CollSize = Vector3(1, 0.4, 1)
+Prop = {
+"collision": Vector3(1, 0.4, 1),
+"rotation": Vector3(90, 0, 90),
+"size": Vector3(0.2, 0.2, 0.2)
+}
+ViewmodelMesh = ExtResource("2_itxba")
+Viewmodel = {
+"animationset": null,
+"offset": Vector3(0, 0, 0),
+"rotation": Vector3(0, 0, 0),
+"size": Vector3(1, 1, 1)
+}
+PickupSound = ExtResource("2_dm5gv")
+Anims = {
+"action1": "vm_toolattack",
+"equip": "vm_toolequip",
+"idle": "vm_toolidle1",
+"reload": "vm_toolattack"
+}
+Action1 = 1
+LTType = 1
+LTRange = 3.0
+Power = 1.0
+PowerMultipliers = {
+null: 1,
+"armored": 0.5,
+"flesh": 1,
+"metal": 0,
+"vulnerable": 2,
+"wood": 0
+}
+Action1Interval = 1.0
 Amount = 1
 Stack = 1
